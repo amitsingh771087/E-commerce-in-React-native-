@@ -1,0 +1,28 @@
+import { View, Text, TouchableOpacity } from "react-native";
+import React from "react";
+import { CategoryItemProps } from "@/constants/types";
+import { Ionicons } from "@expo/vector-icons";
+import { COLORS } from "@/constants";
+
+const CategoryItem = ({ item, isSelected, onPress }: CategoryItemProps) => {
+  return (
+    <TouchableOpacity className="mr-4 items-center" onPress={onPress}>
+      <View
+        className={`w-14 h-14 rounded-full items-center justify-center ${isSelected ? "bg-primary" : "bg-surface"}  `}
+      >
+        <Ionicons
+          name={item.icon as any}
+          size={24}
+          color={isSelected ? "#FFF" : COLORS.primary}
+        />
+      </View>
+      <Text
+        className={`text-sx font-medium ${isSelected ? "text-primary" : "text-secondry"}`}
+      >
+        {item.name}{" "}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+export default CategoryItem;
