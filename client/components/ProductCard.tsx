@@ -10,7 +10,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const isLiked = isInWishlist(product._id);
   return (
-    <Link href={`/products/${product._id}`} asChild>
+    <Link href={`/product/${product._id}`} asChild>
       <TouchableOpacity className="w-[48%] mb-4 bg-white rounded-lg overflow-hidden">
         <View className="relative h-56 w-full bg-gray-100 ">
           <Image
