@@ -123,7 +123,7 @@ const Home = () => {
           <View className="flex-row justify-between  items-center mb-4 ">
             <Text className="text-xl font-bold text-primary">Popular</Text>
             <TouchableOpacity onPress={() => router.push("/shop")}>
-              <Text className="text-secondry text-small">See All</Text>
+              <Text className="text-secondary text-small">See All</Text>
             </TouchableOpacity>
           </View>
           {loading ? (
@@ -137,12 +137,12 @@ const Home = () => {
           )}
         </View>
         {/* News Letter CTA */}
-        <View className="bg-gr-100 p-6 rounded-2xl mb-20 items-center ">
+        <View className="bg-gray-100 p-6 rounded-2xl mb-20 items-center ">
           <Text className="text-2xl font-bold text-primary mb-2 text-center">
             {" "}
             Joind the Revolution{" "}
           </Text>
-          <Text className="text-secondry text-center mb-4 ">
+          <Text className="text-secondary text-center mb-4 ">
             Subscribed to out newsletter and get 10% off your first
             purchase.{" "}
           </Text>

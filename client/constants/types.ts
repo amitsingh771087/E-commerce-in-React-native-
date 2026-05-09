@@ -125,3 +125,27 @@ export type WishlistContextType = {
   isInWishlist: (productId: string) => boolean;
   loading: boolean;
 };
+
+export type CartItemType = {
+  id: string;
+  productId: string;
+  product: Product;
+  quantity: number;
+  size: string;
+  price: number;
+};
+
+export type CartContextType = {
+  cartItems: CartItemType[];
+  addToCart: (product: Product, size: string) => Promise<void>;
+  removeFromCart: (itemId: string, size: string) => Promise<void>;
+  updateQuantity: (
+    itemId: string,
+    quantity: number,
+    size: string,
+  ) => Promise<void>;
+  clearCart: () => Promise<void>;
+  cartTotal: number;
+  itemCount: number;
+  isLoading: boolean;
+};

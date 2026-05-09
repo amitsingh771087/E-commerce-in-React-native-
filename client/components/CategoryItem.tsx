@@ -17,7 +17,7 @@ const CategoryItem = ({ item, isSelected, onPress }: CategoryItemProps) => {
         />
       </View>
       <Text
-        className={`text-sx font-medium ${isSelected ? "text-primary" : "text-secondry"}`}
+        className={`text-xs font-medium ${isSelected ? "text-primary" : "text-secondary"}`}
       >
         {item.name}{" "}
       </Text>
