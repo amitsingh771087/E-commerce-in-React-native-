@@ -7,6 +7,10 @@ import { useCart } from "@/context/CartContext";
 
 const TabLayout = () => {
   const { cartItems } = useCart();
+  const totalCartItems = cartItems.reduce(
+    (total, item) => total + item.quantity,
+    0,
+  );
   return (
     <Tabs
       screenOptions={{
@@ -45,10 +49,10 @@ const TabLayout = () => {
                 size={26}
                 color={color}
               />
-              {cartItems?.length > 0 && (
+              {totalCartItems > 0 && (
                 <View className="absolute -top-2 -right-2 bg-accent min-w-5 h-5 px-1 rounded-full items-center justify-center">
                   <Text className="text-[10px] text-white font-bold">
-                    {cartItems.length}
+                    {totalCartItems}
                   </Text>
                 </View>
               )}
