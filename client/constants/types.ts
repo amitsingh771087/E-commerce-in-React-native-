@@ -55,8 +55,8 @@ export type CartItemProps = {
     quantity: number;
     size: string;
   };
-  onRemove?: () => void;
-  onUpdateQuantity?: (newQty: number) => void;
+  onRemove: () => void;
+  onUpdateQuantity: (newQty: number) => void;
 };
 
 export type CategoryItemProps = {

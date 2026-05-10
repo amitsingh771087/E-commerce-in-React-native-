@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { Tabs } from "expo-router";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { COLORS } from "@/constants";
+import { useCart } from "@/context/CartContext";
 
 const TabLayout = () => {
+  const { cartItems } = useCart();
   return (
     <Tabs
       screenOptions={{
@@ -37,11 +39,20 @@ const TabLayout = () => {
         name="cart"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Feather
-              name={focused ? "shopping-cart" : "shopping-cart"}
-              size={26}
-              color={color}
-            />
+            <View className="relative ">
+              <Feather
+                name={focused ? "shopping-cart" : "shopping-cart"}
+                size={26}
+                color={color}
+              />
+              {cartItems?.length > 0 && (
+                <View className="absolute -top-2 -right-2 bg-accent min-w-5 h-5 px-1 rounded-full items-center justify-center">
+                  <Text className="text-[10px] text-white font-bold">
+                    {cartItems.length}
+                  </Text>
+                </View>
+              )}
+            </View>
           ),
         }}
       />
