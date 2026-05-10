@@ -32,10 +32,14 @@ const ProductDetails = () => {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
+  const productId = Array.isArray(id) ? id[0] : id;
+
   const fetchProduct = async () => {
     setLoading(true);
     try {
-      setProduct(dummyProducts.find((product) => product._id === id) as any);
+      setProduct(
+        dummyProducts.find((product) => product._id === productId) as any,
+      );
     } catch (error) {
     } finally {
       setLoading(false);
@@ -44,7 +48,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     fetchProduct();
-  });
+  }, []);
 
   if (loading) {
     return (
