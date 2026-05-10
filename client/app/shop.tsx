@@ -5,7 +5,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Product } from "@/constants/types";
 import { dummyProducts } from "@/assets/assets";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,15 +18,20 @@ import ProductCard from "@/components/ProductCard";
 const Shop = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoaidngMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
+  const loadingMoreRef = useRef(false);
+
   const fetchProducts = async (pageNumber = 1) => {
+    if (loadingMoreRef.current) return;
+
+    loadingMoreRef.current = true;
     if (pageNumber === 1) {
       setLoading(true);
     } else {
-      setLoaidngMore(true);
+      setLoadingMore(true);
     }
     try {
       const start = (pageNumber - 1) * 10;
@@ -46,7 +51,8 @@ const Shop = () => {
       console.error("Pagination Error  : ", error);
     } finally {
       setLoading(false);
-      setLoaidngMore(false);
+      setLoadingMore(false);
+      loadingMoreRef.current = false;
     }
   };
 
