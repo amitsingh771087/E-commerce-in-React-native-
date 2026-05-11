@@ -6,12 +6,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "@/components/Header";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, PROFILE_MENU } from "@/constants";
+import { useClerk } from "@clerk/expo";
 
 const Profile = () => {
-  const { user } = { user: dummyUser };
+  const { user, signOut } = useClerk();
   const router = useRouter();
 
   const handleLogout = async () => {
+    await signOut();
     router.replace("/sign-in");
   };
   return (
@@ -53,9 +55,10 @@ const Profile = () => {
             {/* Login Button */}
             <TouchableOpacity
               activeOpacity={0.8}
-              className="bg-primary w-full py-4 rounded-2xl items-center shadow-sm"
+              className="bg-primary w-full py-4 px-12 rounded-full items-center shadow-sm"
+              onPress={() => router.push("/sign-in")}
             >
-              <Text className="text-white text-base font-semibold">
+              <Text className="text-white  text-base font-semibold">
                 Login / Sign Up
               </Text>
             </TouchableOpacity>
