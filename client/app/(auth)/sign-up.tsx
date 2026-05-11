@@ -82,6 +82,11 @@ const SignUpScreen = () => {
           navigate: ({ session, decorateUrl }) => {
             if (session?.currentTask) {
               console.log(session.currentTask);
+              Toast.show({
+                type: "info",
+                text1: "Verification Required",
+                text2: "Please verify your email",
+              });
               return;
             }
 
