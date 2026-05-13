@@ -11,6 +11,8 @@ const app = express();
 // connect to MongoDB
 
 await connectDB();
+// Clerk Webhook Route
+app.post("/api/clerk", express.raw({ type: "application/json" }), clerkWebhook);
 
 // Middleware
 app.use(cors());
@@ -18,8 +20,6 @@ app.use(express.json());
 app.use(clerkMiddleware());
 
 const port = process.env.PORT || 3000;
-
-app.post("/apo/clerk", express.raw({ type: "application/json" }), clerkWebhook);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is Live!");
