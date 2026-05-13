@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import "dotenv/config";
 import { clerkMiddleware } from "@clerk/express";
+import { clerkWebhook } from "./controllers/webhooks.js";
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use(express.json());
 app.use(clerkMiddleware());
 
 const port = process.env.PORT || 3000;
+
+app.post("/apo/clerk", express.raw({ type: "application/json" }), clerkWebhook);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is Live!");
