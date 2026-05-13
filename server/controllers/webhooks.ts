@@ -7,29 +7,17 @@ export const clerkWebhook = async (req: Request, res: Response) => {
     const evt = await verifyWebhook(req);
 
     if (evt.type === "user.created" || evt.type === "user.updated") {
-      const email = evt.data?.email_addresses[0]?.email_address;
-
-      if (!email) {
-        return res.status(400).json({
-          success: false,
-          message: "Email is missing",
-        });
-      }
-
-      const user = await User.findOne({ clerkId: evt.data.id });
-
       const userData = {
         clerkId: evt.data.id,
-        email,
+        email: evt.data?.email_addresses[0]?.email_address,
         name: evt.data?.first_name + " " + evt.data?.last_name,
         image: evt.data?.image_url,
       };
 
-      if (user) {
-        await User.findOneAndUpdate({ clerkId: evt.data.id }, userData);
-      } else {
-        await User.create(userData);
-      }
+      await User.findOneAndUpdate({ clerkId: evt.data.id }, userData, {
+        upsert: true,
+        new: true,
+      });
     }
 
     return res.json({ success: true, message: "WebHook Recived" });
