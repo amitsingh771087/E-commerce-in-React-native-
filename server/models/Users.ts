@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import type { IUser } from "../types/index.js";
 
-const userSchema = new mongoose.Schema<IUser>(
+const userSchema = new Schema<IUser>(
   {
     name: { type: String, trim: true, required: true },
     email: { type: String, unique: true, trim: true, required: true },

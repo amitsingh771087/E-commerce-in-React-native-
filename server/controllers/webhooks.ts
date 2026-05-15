@@ -1,17 +1,22 @@
 import { verifyWebhook } from "@clerk/express/webhooks";
-import type { Request, Response } from "express";
 import User from "../models/Users.js";
+import type { Controller } from "../types/express.js";
 
-export const clerkWebhook = async (req: Request, res: Response) => {
+export const clerkWebhook: Controller = async (req, res) => {
   try {
     const evt = await verifyWebhook(req);
 
     if (evt.type === "user.created" || evt.type === "user.updated") {
+      const adminEmail = process.env.ADMIN_EMAIL;
+
+      const email = evt.data?.email_addresses[0]?.email_address;
+
       const userData = {
         clerkId: evt.data.id,
-        email: evt.data?.email_addresses[0]?.email_address,
+        email,
         name: evt.data?.first_name + " " + evt.data?.last_name,
         image: evt.data?.image_url,
+        role: email === adminEmail ? "admin" : "user",
       };
 
       await User.findOneAndUpdate({ clerkId: evt.data.id }, userData, {
