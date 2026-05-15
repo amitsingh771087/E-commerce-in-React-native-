@@ -4,13 +4,14 @@ import {
   createOrder,
   getAllOrders,
   getOrder,
+  getOrders,
   updateOrderStatus,
 } from "../controllers/orderController.js";
 
 const OrderRoutes = express.Router();
 
 // get user orders
-OrderRoutes.get("/", Protect, getOrder);
+OrderRoutes.get("/", Protect, getOrders);
 
 // get single order
 OrderRoutes.get("/:id", Protect, getOrder);
@@ -22,6 +23,6 @@ OrderRoutes.post("/", Protect, createOrder);
 OrderRoutes.put("/:id/status", Protect, authorize("admin"), updateOrderStatus);
 
 // get All Orders (Admin only)
-OrderRoutes.get("/admin/all", Protect, getAllOrders);
+OrderRoutes.get("/admin/all", Protect, authorize("admin"), getAllOrders);
 
 export default OrderRoutes;

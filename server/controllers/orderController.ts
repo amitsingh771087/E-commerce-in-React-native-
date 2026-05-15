@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 import Product from "../models/Products.js";
@@ -21,9 +22,11 @@ export const getOrders: Controller = async (req, res) => {
 // GET /api/orders/:id
 export const getOrder: Controller = async (req, res) => {
   try {
-    const orders = await Order.findById(req.params.id)
-      .populate("items.product", "name images")
-      .sort("-createdAt");
+    const orders = await Order.findById(req.params.id).populate(
+      "items.product",
+      "name images",
+    );
+
     if (!orders) {
       return res
         .status(404)
@@ -46,12 +49,15 @@ export const getOrder: Controller = async (req, res) => {
 //  Create Orders from Cart
 // POST  /api/orders
 export const createOrder: Controller = async (req, res) => {
+  const session = await mongoose.startSession();
   try {
+    await session.startTransaction();
     const { shippingAddress, notes } = req.body;
-    const cart = await Cart.findOne({ user: req.user._id }).populate(
-      "items.product",
-    );
+    const cart = await Cart.findOne({ user: req.user._id })
+      .populate("items.product")
+      .session(session);
     if (!cart || cart.items.length === 0) {
+      await session.abortTransaction();
       return res
         .status(400)
         .json({ success: false, message: "Cart Not Found" });
@@ -60,8 +66,9 @@ export const createOrder: Controller = async (req, res) => {
     // verify Stock and prepare Order Item
     const orderItems = [];
     for (const item of cart.items) {
-      const product = await Product.findById(item.product._id);
+      const product = await Product.findById(item.product._id).session(session);
       if (!product || product.stock < item.quantity) {
+        await session.abortTransaction();
         return res.status(400).json({
           success: false,
           message: `Insufficient Stock for ${(item.product as any).name}`,
@@ -77,7 +84,8 @@ export const createOrder: Controller = async (req, res) => {
       //   Reduce Stock
 
       product.stock -= item.quantity;
-      await product.save();
+
+      await product.save({ session });
     }
 
     const subtotal = cart.totalAmount;
@@ -85,33 +93,43 @@ export const createOrder: Controller = async (req, res) => {
     const tax = 0;
     const totalAmount = subtotal + shippingCost + tax;
 
-    const order = await Order.create({
-      user: req.user._id,
-      items: orderItems,
-      shippingAddress,
-      paymentMethod: req.body.paymentMethod || "cash",
-      paymentStatus: "pending",
-      subtotal,
-      shippingCost,
-      tax,
-      totalAmount,
-      notes,
-      paymentIntentId: req.body.paymentIntentId,
-      orderNumber: "ORD-" + Date.now(),
-    });
+    const order = await Order.create(
+      [
+        {
+          user: req.user._id,
+          items: orderItems,
+          shippingAddress,
+          paymentMethod: req.body.paymentMethod || "cash",
+          paymentStatus: "pending",
+          subtotal,
+          shippingCost,
+          tax,
+          totalAmount,
+          notes,
+          paymentIntentId: req.body.paymentIntentId,
+          orderNumber: "ORD-" + Date.now(),
+        },
+      ],
+      { session },
+    );
 
     if (req.body.paymentMethod !== "stripe") {
       cart.items = [];
       cart.totalAmount = 0;
-      await cart.save();
+      await cart.save({ session });
     }
+
+    await session.commitTransaction();
 
     res.status(201).json({
       success: true,
-      data: order,
+      data: order[0],
     });
   } catch (error: any) {
+    await session.abortTransaction();
     res.status(500).json({ success: false, message: error.message });
+  } finally {
+    await session.endSession();
   }
 };
 
@@ -149,15 +167,16 @@ export const getAllOrders: Controller = async (req, res) => {
 
     if (status) query.orderStatus = status;
     const total = await Order.countDocuments(query);
-    const orders = Order.find(query)
+    const order = await Order.find(query)
       .populate("user", "name email")
       .populate("items.product", "name")
       .sort("-createdAt")
-      .skip((Number(page) - 1) * Number(limit));
+      .skip((Number(page) - 1) * Number(limit))
+      .limit(Number(limit));
 
     res.status(200).json({
       success: true,
-      data: orders,
+      data: order,
       pagination: {
         total,
         page: Number(page),

@@ -20,17 +20,17 @@ ProductRoutes.get("/:id", getProduct);
 // create Product (Admin only)
 ProductRoutes.post(
   "/",
-  upload.array("images", 5),
   Protect,
   authorize("admin"),
+  upload.array("images", 5),
   createProducts,
 );
 // update Product (Admin only)
 ProductRoutes.put(
   "/:id",
-  upload.array("images", 5),
   Protect,
   authorize("admin"),
+  upload.array("images", 5),
   updateProduct,
 );
 // Delete Product (Admin only)

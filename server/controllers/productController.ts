@@ -147,7 +147,7 @@ export const updateProduct: Controller = async (req, res) => {
       images = [...images, ...newImages];
     }
     const updates = { ...req.body };
-    if (req.body.size) {
+    if (req.body.sizes) {
       let sizes = req.body.sizes || [];
       if (typeof sizes === "string") {
         try {
@@ -177,7 +177,9 @@ export const updateProduct: Controller = async (req, res) => {
     });
 
     if (!product) {
-      res.status(404).json({ success: false, message: "Product Not Found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product Not Found" });
     }
     res.status(201).json({ success: true, data: product });
   } catch (error: any) {

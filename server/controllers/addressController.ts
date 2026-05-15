@@ -78,7 +78,7 @@ export const updateAddress: Controller = async (req, res) => {
         state,
         zipCode,
         country,
-        isDefault: isDefault || false,
+        ...(typeof isDefault !== "undefined" && { isDefault }),
       },
       { new: true },
     );

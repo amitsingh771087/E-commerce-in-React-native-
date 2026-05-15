@@ -5,7 +5,6 @@ import connectDB from "./config/db.js";
 import "dotenv/config";
 import { clerkMiddleware } from "@clerk/express";
 import { clerkWebhook } from "./controllers/webhooks.js";
-import makeAdmin from "./scripts/makeAdmin.js";
 import ProductRoutes from "./routes/productsRoutes.js";
 import cartRouter from "./routes/cartRoutes.js";
 import OrderRoutes from "./routes/orderRoutes.js";
@@ -36,8 +35,6 @@ app.use("/api/cart", cartRouter);
 app.use("/api/orders", OrderRoutes);
 app.use("/api/addresses", AddressRoutes);
 app.use("/api/admin", AdminRoutes);
-
-await makeAdmin();
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);

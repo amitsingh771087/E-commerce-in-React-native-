@@ -1,5 +1,3 @@
-// get dashboard stats
-
 import User from "../models/Users.js";
 import Product from "../models/Products.js";
 import Order from "../models/Order.js";
@@ -8,21 +6,39 @@ import type { Controller } from "../types/express.js";
 // GET /api/admin/stats
 export const getDashboardStats: Controller = async (req, res) => {
   try {
-    const totalUser = await User.countDocuments();
-    const totalProducts = await Product.countDocuments();
-    const totalOrders = await Order.countDocuments();
-    const validOrders = await Order.find({ orderStatus: { $ne: "cancelled" } });
-    const totalRevenue = validOrders.reduce(
-      (sum, order) => sum + order.totalAmount,
-      0,
-    );
+    const [totalUser, totalProducts, totalOrders, revenueResult, recentOrders] =
+      await Promise.all([
+        User.countDocuments(),
 
-    const recentOrders = await Order.find()
-      .sort("-createdAt")
-      .limit(5)
-      .populate("user", "name email");
+        Product.countDocuments(),
 
-    res.status(201).json({
+        Order.countDocuments(),
+
+        Order.aggregate([
+          {
+            $match: {
+              orderStatus: { $ne: "cancelled" },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalRevenue: {
+                $sum: "$totalAmount",
+              },
+            },
+          },
+        ]),
+
+        Order.find()
+          .sort({ createdAt: -1 })
+          .limit(5)
+          .populate("user", "name email"),
+      ]);
+
+    const totalRevenue = revenueResult[0]?.totalRevenue || 0;
+
+    return res.status(200).json({
       success: true,
       data: {
         totalUser,
@@ -33,6 +49,9 @@ export const getDashboardStats: Controller = async (req, res) => {
       },
     });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

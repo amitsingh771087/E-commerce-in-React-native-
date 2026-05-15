@@ -48,7 +48,16 @@ export const addToCart: Controller = async (req, res) => {
     });
 
     if (existingItem) {
-      existingItem.quantity += quantity;
+      const newQuantity = existingItem.quantity + quantity;
+
+      if (newQuantity > product.stock) {
+        return res.status(400).json({
+          success: false,
+          message: "Insufficient Stock",
+        });
+      }
+
+      existingItem.quantity = newQuantity;
       existingItem.price = product.price;
     } else {
       cart.items.push({
@@ -91,12 +100,18 @@ export const updateCartItems: Controller = async (req, res) => {
     }
 
     if (quantity <= 0) {
-      cart.items = cart?.items.filter(
-        (item) => item.product.toString() !== productId,
+      cart.items = cart.items.filter(
+        (item) => item.product.toString() !== productId || item.size !== size,
       );
     } else {
       const product = await Product.findById(productId);
-      if (product!.stock < quantity) {
+      if (!product) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
+      }
+
+      if (product.stock < quantity) {
         return res
           .status(400)
           .json({ success: false, message: "Insufficient Stock" });
@@ -117,26 +132,42 @@ export const updateCartItems: Controller = async (req, res) => {
 // DELETE  /api/cart/item/:productId
 export const removeCartItems: Controller = async (req, res) => {
   try {
-    const { size } = req.params;
+    const { productId } = req.params;
+    const { size } = req.body;
+
     const cart = await Cart.findOne({ user: req.user._id });
 
-    if (!cart || !size) {
+    if (!cart) {
       return res
         .status(404)
         .json({ success: false, message: "Cart not Found" });
     }
 
+    if (!size) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Size is required" });
+    }
+
     cart.items = cart.items.filter(
-      (item) =>
-        item.product.toString() !== req.params.productId || item.size !== size,
+      (item) => item.product.toString() !== productId || item.size !== size,
     );
 
     cart.calculateTotal();
+
     await cart.save();
-    await cart.populate("items.product", "name  images price stock");
-    return res.status(200).json({ success: true, data: cart });
+
+    await cart.populate("items.product", "name images price stock");
+
+    return res.status(200).json({
+      success: true,
+      data: cart,
+    });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -150,6 +181,7 @@ export const clearCart: Controller = async (req, res) => {
       cart.totalAmount = 0;
       await cart.save();
     }
+    res.status(200).json({ success: true, data: cart });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

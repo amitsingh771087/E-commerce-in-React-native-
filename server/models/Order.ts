@@ -8,7 +8,7 @@ const OrderItemSchema = new Schema<IOrderItem>({
     required: true,
   },
   name: {
-    trpe: String,
+    type: String,
   },
   quantity: { type: Number, required: true, min: 1 },
   price: { type: Number, required: true },
@@ -24,7 +24,7 @@ const OrderSchema = new Schema<IOrder>(
       street: { type: String, required: true },
       city: { type: String, required: true },
       state: { type: String, required: true },
-      postalCode: { type: String, required: true },
+      zipCode: { type: String, required: true },
       country: { type: String, required: true },
     },
     paymentMethod: {
