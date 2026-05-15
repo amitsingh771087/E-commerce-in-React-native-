@@ -10,6 +10,7 @@ import cartRouter from "./routes/cartRoutes.js";
 import OrderRoutes from "./routes/orderRoutes.js";
 import AddressRoutes from "./routes/addressRoutes.js";
 import AdminRoutes from "./routes/adminRoutes.js";
+import wishlistRoutes from "./routes/wishlistRoutes.js";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/cart", cartRouter);
 app.use("/api/orders", OrderRoutes);
 app.use("/api/addresses", AddressRoutes);
 app.use("/api/admin", AdminRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
