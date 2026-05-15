@@ -11,12 +11,15 @@ import OrderRoutes from "./routes/orderRoutes.js";
 import AddressRoutes from "./routes/addressRoutes.js";
 import AdminRoutes from "./routes/adminRoutes.js";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
+// import { seedProducts } from "./scripts/seedProducts.js";
+import { ensureAddressIndexes } from "./models/Address.js";
 
 const app = express();
 
 // connect to MongoDB
 
 await connectDB();
+await ensureAddressIndexes();
 // Clerk Webhook Route
 app.post("/api/clerk", express.raw({ type: "application/json" }), clerkWebhook);
 
@@ -38,6 +41,8 @@ app.use("/api/addresses", AddressRoutes);
 app.use("/api/admin", AdminRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 
+// Seeds Dummy products if no product present
+// await seedProducts(process.env.MONGODB_URI as string);
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });

@@ -4,6 +4,6 @@ import { getDashboardStats } from "../controllers/adminController.js";
 
 const AdminRoutes = express.Router();
 
-AdminRoutes.get("/", Protect, authorize("admin"), getDashboardStats);
+AdminRoutes.get("/stats", Protect, authorize("admin"), getDashboardStats);
 
 export default AdminRoutes;
