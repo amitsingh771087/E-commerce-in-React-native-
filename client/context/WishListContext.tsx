@@ -21,7 +21,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   const fetchWishlist = async () => {
-    if (!isInWishlist) {
+    if (!isSignedIn) {
       setWishlist([]);
       return;
     }
