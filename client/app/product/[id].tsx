@@ -11,12 +11,12 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Product } from "@/constants/types";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishListContext";
-import { dummyProducts } from "@/assets/assets";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "@/constants";
 import { ScrollView } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
+import api from "@/constants/api";
 
 const { width } = Dimensions.get("window");
 
@@ -26,21 +26,26 @@ const ProductDetails = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { addToCart, cartItems, itemCount } = useCart();
+  const { addToCart, cartItems, itemCount, updateQuantity, removeFromCart } =
+    useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
-  const productId = Array.isArray(id) ? id[0] : id;
-
   const fetchProduct = async () => {
     setLoading(true);
     try {
-      setProduct(
-        dummyProducts.find((product) => product._id === productId) as any,
-      );
-    } catch (error) {
+      const { data } = await api.get(`/products/${id}`);
+      if (data.success) {
+        setProduct(data.data);
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Failed to Fetch Poducts",
+        text2: error.response?.data?.message || "Something went wrong",
+      });
     } finally {
       setLoading(false);
     }
@@ -48,7 +53,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     fetchProduct();
-  }, []);
+  }, [id]);
 
   if (loading) {
     return (
@@ -79,6 +84,11 @@ const ProductDetails = () => {
     }
     addToCart(product, selectedSize || "");
   };
+
+  const cartItem = cartItems.find((item) => item.productId === product._id);
+
+  const quantityInCart = cartItem?.quantity || 0;
+  const isInCart = quantityInCart > 0;
 
   return (
     <View className="flex-1 bg-white">
@@ -191,7 +201,7 @@ const ProductDetails = () => {
         </View>
       </ScrollView>
       {/* Footer */}
-      <View className="absolute bottom-0 left-0 flex-row right-0 p-4 bg-white border-t border-gray-100  items-center ">
+      <View className="absolute bottom-0 left-0 flex-row right-0 p-4 bg-white border-t border-gray-100 items-center">
         <TouchableOpacity
           onPress={handleAddToCart}
           className="w-4/5 bg-primary py-4 rounded-full items-center shadow-lg flex-row justify-center"
