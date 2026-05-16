@@ -40,6 +40,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         headers: await getAuthHeaders(),
       });
 
+      if (!isSignedIn) return;
+
       if (data.success && data.data) {
         const serverCart = data.data;
         const mappedItems: CartItemType[] = serverCart.items.map(

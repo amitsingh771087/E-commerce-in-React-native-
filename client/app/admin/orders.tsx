@@ -71,9 +71,10 @@ export default function AdminOrders() {
   };
 
   const updateStatus = async (newStatus: string) => {
-    if (!selectedOrder) return;
+    if (!selectedOrder || updating) return;
 
     try {
+      setUpdating(true);
       const token = await getToken();
       const { data } = await api.put(
         `/orders/${selectedOrder._id}/status`,
@@ -89,7 +90,7 @@ export default function AdminOrders() {
       if (data.success) {
         Alert.alert("Success", "Order Status Updated");
         setStatusModalVisible(false);
-        fetchOrders();
+        await fetchOrders();
       }
     } catch (error: any) {
       console.error("Failed to Update Status : ", error);
@@ -115,7 +116,7 @@ export default function AdminOrders() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {orders.length === 0 ? (
+        {!loading && orders.length === 0 ? (
           <View className="flex-1 justify-center items-center mt-20">
             <Text className="text-secondary">No orders found</Text>
           </View>

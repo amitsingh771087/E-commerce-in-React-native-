@@ -104,7 +104,7 @@ const Checkout = () => {
       Toast.show({
         type: "error",
         text1: "Failed to Place Order",
-        text2: error.response.data.message || "Something Went Wrong",
+        text2: error.response?.data?.message || "Something Went Wrong",
       });
     } finally {
       setLoading(false);

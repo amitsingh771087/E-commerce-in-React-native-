@@ -24,8 +24,6 @@ const AddressSchema = new Schema<IAddress>(
   { timestamps: true },
 );
 
-AddressSchema.index({ user: 1, createdAt: -1 });
-
 const Address = mongoose.model<IAddress>("Address", AddressSchema);
 
 export const ensureAddressIndexes = async () => {

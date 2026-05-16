@@ -29,13 +29,14 @@ export default function Orders() {
       const token = await getToken();
       const { data } = await api.get("/orders/", {
         headers: {
-          Authorization: ` Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (data.success) {
         setOrders(data.data);
       }
     } catch (error) {
+      console.log(error);
     } finally {
       // setOrders(dummyOrders as any[]);
       setLoading(false);
@@ -51,12 +52,37 @@ export default function Orders() {
       <Header title="My Orders" showBack />
 
       {loading ? (
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color={COLORS.primary} />
-        </View>
-      ) : orders.length === 0 ? (
-        <View className="flex-1 justify-center items-center">
-          <Text className="text-secondary text-lg">No orders found</Text>
+        <View className="flex-1 items-center justify-center px-6">
+          {/* Order Icon */}
+          <View className="w-24 h-24 rounded-full bg-primary/10 items-center justify-center mb-6">
+            <Ionicons
+              name="bag-handle-outline"
+              size={48}
+              color={COLORS.primary}
+            />
+          </View>
+
+          {/* Title */}
+          <Text className="text-2xl font-bold text-primary mb-2">
+            No Orders Found
+          </Text>
+
+          {/* Subtitle */}
+          <Text className="text-secondary text-center text-base leading-6 mb-8">
+            You haven’t placed any orders yet. Browse products and place your
+            first order now.
+          </Text>
+
+          {/* Button */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            className="bg-primary w-full py-4 rounded-2xl items-center shadow-sm"
+            onPress={() => router.push("/")}
+          >
+            <Text className="text-white text-base font-semibold">
+              Order Now
+            </Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList

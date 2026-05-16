@@ -26,7 +26,8 @@ export default function OrderDetails() {
       if (data.success) {
         setOrder(data.data);
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error(error);
     } finally {
       // setOrders(dummyOrders as any[]);
       setLoading(false);

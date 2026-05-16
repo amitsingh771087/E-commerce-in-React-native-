@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 const LOCAL_API_URL = Platform.select({
   android: "http://192.168.1.5:3000/api",
   ios: "http://192.168.1.5:3000/api",
-  default: "http://localhost:3000/api",
+  default: "https://localhost:3000/api",
 });
 
 const api = axios.create({

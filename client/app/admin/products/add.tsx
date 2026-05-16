@@ -89,7 +89,7 @@ export default function AddProduct() {
         formData.append("images", {
           uri,
           name: filename,
-          type: "images/jpeg",
+          type: "image/jpeg",
         } as any);
       }
 

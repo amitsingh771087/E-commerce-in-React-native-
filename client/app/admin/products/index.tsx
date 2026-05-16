@@ -27,7 +27,7 @@ export default function AdminProducts() {
   const fetchProducts = async () => {
     try {
       const { data } = await api.get("/products", {
-        params: { limit: 999 },
+        params: { limit: 20 },
       });
 
       if (data.success) {
@@ -76,7 +76,7 @@ export default function AdminProducts() {
       Toast.show({
         type: "error",
         text1: "Failed to Delete Product",
-        text2: error.responses?.data?.message || "Something went wrong",
+        text2: error.response?.data?.message || "Something went wrong",
       });
     }
   };
